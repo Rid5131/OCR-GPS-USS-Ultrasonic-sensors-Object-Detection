@@ -1,0 +1,120 @@
+#First Setup Raspberry Pi camera and enable it to take a photo
+import pytesseract
+import pyttsx3
+from PIL import Image
+import io
+import time
+import picamera
+
+# Initialize the camera
+with picamera.PiCamera() as camera:
+    camera.start_preview()
+    time.sleep(2) # Wait for camera to adjust to light
+    stream = io.BytesIO()
+    camera.capture(stream, format='jpeg')
+    stream.seek(0)
+    image = Image.open(stream)
+
+# Pass the image to the Tesseract OCR engine to extract text
+text = pytesseract.image_to_string(image)
+
+# Initialize the text-to-speech engine
+engine = pyttsx3.init()
+
+# Convert the extracted text to audio
+engine.say(text)
+engine.runAndWait()
+
+#Convert the text to audio
+import io
+import time
+import picamera
+import pytesseract
+from PIL import Image
+from google.cloud import texttospeech
+
+# Initialize the camera
+with picamera.PiCamera() as camera:
+    camera.start_preview()
+    time.sleep(2) # Wait for camera to adjust to light
+    stream = io.BytesIO()
+    camera.capture(stream, format='jpeg')
+    stream.seek(0)
+    image = Image.open(stream)
+
+# Pass the image to the Tesseract OCR engine to extract text
+text = pytesseract.image_to_string(image)
+
+# Initialize the Text-to-Speech client
+client = texttospeech.TextToSpeechClient()
+
+# Set the text input to be synthesized
+synthesis_input = texttospeech.SynthesisInput(text=text)
+
+# Build the voice request
+voice = texttospeech.VoiceSelectionParams(
+    language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+)
+
+# Select the type of audio file to return
+audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.LINEAR16)
+
+# Perform the text-to-speech request on the text input with the selected voice parameters and audio file type
+response = client.synthesize_speech(
+    input=synthesis_input, voice=voice, audio_config=audio_config
+)
+
+# The response's audio_content is binary.
+with open("output.wav", "wb") as out:
+    out.write(response.audio_content)
+
+# Play the audio using Pygame
+import pygame
+
+pygame.mixer.init()
+pygame.mixer.music.load("output.wav")
+pygame.mixer.music.play()
+while pygame.mixer.music.get_busy() == True:
+    continue
+
+#Audio
+import os
+import pytesseract
+import cv2
+import numpy as np
+import pyttsx3
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+
+# Initialize the camera and grab a reference to the raw camera capture
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 32
+rawCapture = PiRGBArray(camera, size=(640, 480))
+
+# Initialize the OCR engine
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+
+# Initialize the text-to-speech engine
+engine = pyttsx3.init()
+
+# Wait for the camera to warm up
+time.sleep(0.1)
+
+# Capture an image from the camera
+camera.capture(rawCapture, format="bgr")
+image = rawCapture.array
+
+# Convert the image to grayscale and apply thresholding
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+gray = cv2.GaussianBlur(gray, (5, 5), 0)
+thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+
+# Perform OCR on the image
+text = pytesseract.image_to_string(thresh)
+
+# Convert the text to speech
+engine.say(text)
+engine.runAndWait()
+
+
