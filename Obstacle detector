@@ -1,0 +1,156 @@
+#This one sends a buz
+#define pingPin 12        //trig pin of sr04
+#define echoPin 11
+#define B1 2
+
+int buttonState = 0;
+
+void setup() {
+   Serial.begin(9600); // Starting Serial Terminal
+   pinMode(pingPin,OUTPUT); 
+   pinMode(echoPin,INPUT);
+   pinMode(B1,INPUT);
+   
+   pinMode(A3,OUTPUT);   //pin A3 provides the output on buzzer
+}
+
+void loop() {
+   long duration, cm;
+
+
+   //send a signal at ping pin at an interval of 0.002 seconds to check for an object
+   digitalWrite(pingPin, LOW);
+   delayMicroseconds(2);    
+   digitalWrite(pingPin, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(pingPin, LOW);
+
+  
+   duration = pulseIn(echoPin, HIGH);  //check time using pulseIn function
+   
+   cm = microsecondsToCentimeters(duration);   //functin call to find distance
+   
+  /* Serial.print(cm);
+   Serial.print("cm");
+   Serial.println();
+   delay(100);
+   
+   for debugging
+   */
+
+   
+   if((digitalRead(B1)==LOW) && (cm<100&&cm>70)) 
+                         {analogWrite(A3,255); 
+                          delay(1000); 
+                          analogWrite(A3,0); 
+                          delay(1000); }    //sound buzzer every second if obstacle distance is between 70-100cm. 
+  
+   
+   else if((digitalRead(B1)==LOW) && (cm<70&&cm>40))
+                          {analogWrite(A3,255); 
+                           delay(500); 
+                           analogWrite(A3,0); 
+                           delay(500); }   //sound buzzer every 0.5 seconds if obstacle distance is between 10-20cm. 
+
+  else if((digitalRead(B1)==LOW) && (cm<40&&cm>10)) {analogWrite(A3,255); 
+                           delay(250); 
+                           analogWrite(A3,0); 
+                           delay(250); }   //sound buzzer every 0.5 seconds if obstacle distance is between 10-20cm. 
+  
+   
+   else if ((digitalRead(B1)==LOW) && (cm<10&&cm>0))  
+                          {analogWrite(A3,255); 
+                           delay(50); 
+                           analogWrite(A3,0);
+                           delay(50); }    //sound buzzer every 0.1 seconds if obstacle distance is between 0-10cm. 
+  
+   
+   else                     analogWrite(A3,0); //do not sound the buzzer
+}
+
+
+
+//function to return distance in cm from microseconds
+long microsecondsToCentimeters(long microseconds) {
+   return microseconds / 29 / 2;
+}
+
+/*Modified by
+ * Technical team, REES52
+ */
+
+#define pingPin 12        //trig pin of sr04
+#define echoPin 11
+#define B1 2
+
+int buttonState = 0;
+
+void setup() {
+   Serial.begin(9600); // Starting Serial Terminal
+   pinMode(pingPin,OUTPUT); 
+   pinMode(echoPin,INPUT);
+   pinMode(B1,INPUT);
+   
+   pinMode(A3,OUTPUT);   //pin A3 provides the output on buzzer
+}
+
+void loop() {
+   long duration, cm;
+
+
+   //send a signal at ping pin at an interval of 0.002 seconds to check for an object
+   digitalWrite(pingPin, LOW);
+   delayMicroseconds(2);    
+   digitalWrite(pingPin, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(pingPin, LOW);
+
+  
+   duration = pulseIn(echoPin, HIGH);  //check time using pulseIn function
+   
+   cm = microsecondsToCentimeters(duration);   //functin call to find distance
+   
+  /* Serial.print(cm);
+   Serial.print("cm");
+   Serial.println();
+   delay(100);
+   
+   for debugging
+   */
+
+   
+   if((digitalRead(B1)==LOW) && (cm<100&&cm>70)) 
+                         {analogWrite(A3,255); 
+                          delay(1000); 
+                          analogWrite(A3,0); 
+                          delay(1000); }    //sound buzzer every second if obstacle distance is between 70-100cm. 
+  
+   
+   else if((digitalRead(B1)==LOW) && (cm<70&&cm>40))
+                          {analogWrite(A3,255); 
+                           delay(500); 
+                           analogWrite(A3,0); 
+                           delay(500); }   //sound buzzer every 0.5 seconds if obstacle distance is between 10-20cm. 
+
+  else if((digitalRead(B1)==LOW) && (cm<40&&cm>10)) {analogWrite(A3,255); 
+                           delay(250); 
+                           analogWrite(A3,0); 
+                           delay(250); }   //sound buzzer every 0.5 seconds if obstacle distance is between 10-20cm. 
+  
+   
+   else if ((digitalRead(B1)==LOW) && (cm<10&&cm>0))  
+                          {analogWrite(A3,255); 
+                           delay(50); 
+                           analogWrite(A3,0);
+                           delay(50); }    //sound buzzer every 0.1 seconds if obstacle distance is between 0-10cm. 
+  
+   
+   else                     analogWrite(A3,0); //do not sound the buzzer
+}
+
+
+
+//function to return distance in cm from microseconds
+long microsecondsToCentimeters(long microseconds) {
+   return microseconds / 29 / 2;
+}
