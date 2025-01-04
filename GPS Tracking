@@ -1,0 +1,59 @@
+
+#GPS tracking using a GPS module and a SIM800L GSM module
+#include <TinyGPS++.h>
+#include <SoftwareSerial.h>
+
+TinyGPSPlus gps;
+
+SoftwareSerial gpsSerial(6, 7);
+
+SoftwareSerial sim800l(3, 2);
+
+int buttonPin = 8;
+
+float lattitude,longitude;
+ 
+float a[2];
+ 
+float *p;
+bool buttonState = false;
+
+void setup() {
+  Serial.begin(9600);
+  sim800l.begin(9600);
+  pinMode(buttonPin, INPUT_PULLUP);
+}
+
+void loop() 
+
+{
+  while (sim800l.available()) {
+    Serial.write(sim800l.read());
+  }
+
+  while (Serial.available()) {
+    sim800l.write(Serial.read());
+  }
+
+  if (digitalRead(buttonPin) == LOW && !buttonState) {
+    buttonState = true;
+    sim800l.println("AT+CMGF=1");
+    delay(100);
+    sim800l.print("AT+CMGS=\"+917021252120\"\r");
+    delay(100);
+    sim800l.print("My location is: ");
+    sim800l.print(gps.location.lat(), 6);
+    sim800l.print(",");
+    sim800l.print(gps.location.lng(), 6);
+    sim800l.print("\r");
+    delay(100);
+    sim800l.write(0x1A);
+    delay(1000);
+  } else if (digitalRead(buttonPin) == HIGH && buttonState) {
+    buttonState = false;
+  }
+
+  while (Serial.available()) {
+    gps.encode(Serial.read());
+  }
+}
